@@ -1,4 +1,4 @@
-import { env } from "process";
+import { env } from "./types/env";
 import * as chains from "viem/chains";
 
 export type ScaffoldConfig = {
