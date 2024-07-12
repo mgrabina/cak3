@@ -9,7 +9,7 @@ export type ScaffoldConfig = {
   onlyLocalBurnerWallet: boolean;
 };
 
-const isProduction = env.NEXT_PUBLIC_VERCEL_ENV === "production";
+const isProduction = env.NEXT_PUBLIC_VERCEL_ENV === "production" || env.NEXT_PUBLIC_VERCEL_ENV === "preview";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
