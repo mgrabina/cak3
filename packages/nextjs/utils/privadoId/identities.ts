@@ -32,7 +32,7 @@ export  const getRoleCredentialProofRequest = async (address: string, _role: Rol
   const { auth } = await import('@iden3/js-iden3-auth');
 
   const request = auth.createAuthorizationRequest(
-    "",
+    "Log in into Cak3",
     "did:polygonid:polygon:amoy:2qQ68JkRcf3xrHPQPWZei3YeVzHPP58wYNxx2mEouR",
     host + `/api/${address}/save-role/${_role}`,
   );
