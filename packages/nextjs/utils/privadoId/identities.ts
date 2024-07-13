@@ -1,5 +1,4 @@
 import { host } from "../misc";
-import { auth, protocol, resolver } from "@iden3/js-iden3-auth";
 import { env } from "~~/types/env";
 
 // const { auth, protocol, resolver } = require("@iden3/js-iden3-core");
@@ -29,7 +28,9 @@ export const socialCredential: Credential = {
   type: "socialKYC",
 };
 
-export const getRoleCredentialProofRequest = (address: string, _role: Role, _company: string) => {
+export  const getRoleCredentialProofRequest = async (address: string, _role: Role, _company: string) => {
+  const { auth } = await import('@iden3/js-iden3-auth');
+
   const request = auth.createAuthorizationRequest(
     "",
     "did:polygonid:polygon:amoy:2qQ68JkRcf3xrHPQPWZei3YeVzHPP58wYNxx2mEouR",

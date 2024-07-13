@@ -114,10 +114,20 @@ export const Header = () => {
   const { address } = useAccount();
   useEffect(() => {
     if (!address) return;
-    setInvestorQR(JSON.stringify(getRoleCredentialProofRequest(address, "investor", "acme")));
-    setFounderQR(JSON.stringify(getRoleCredentialProofRequest(address, "founder", "acme")));
-    setEmployeeQR(JSON.stringify(getRoleCredentialProofRequest(address, "employee", "acme")));
-  }, [address]);
+
+    getRoleCredentialProofRequest(address, "investor", "acme").then((req) => {
+
+      setInvestorQR(JSON.stringify(req));
+    });
+
+    getRoleCredentialProofRequest(address, "founder", "acme").then((req) => {
+      setFounderQR(JSON.stringify(req));
+    });
+
+    getRoleCredentialProofRequest(address, "employee", "acme").then((req) => {
+      setEmployeeQR(JSON.stringify(req));
+    });
+    }, [address]);
 
 
   const roleContext = useRole();

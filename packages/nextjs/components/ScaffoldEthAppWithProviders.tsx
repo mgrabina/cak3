@@ -32,6 +32,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~~/com
 // import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { Role } from "~~/utils/privadoId/identities";
+import Iden3AuthComponent from "~~/utils/privadoId/iden3component";
 
 export type ContextType = {
   role: Role | undefined;
@@ -62,7 +63,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       .then(res => res.json())
       // .then(data => console.log("roles from backend: ", data))
       .then(data => {
-        const dataRoles = (data as unknown as any)
+        const dataRoles = data as unknown as any;
 
         if (!dataRoles?.data || dataRoles?.data.length === 0) {
           return;
@@ -90,6 +91,8 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <RoleProvider>
+        {/* <Iden3AuthComponent /> */}
+
         <div className="flex flex-col min-h-screen">
           <TooltipProvider>
             <div className="flex min-h-screen w-full flex-col bg-muted/40">

@@ -19,19 +19,32 @@ import { Input } from "~~/components/ui/input";
 import { Label } from "~~/components/ui/label";
 import { useToast } from "~~/components/ui/use-toast";
 import { host } from "~~/utils/misc";
-import {
-  getRoleCredentialProofRequest,
-  pohCredential,
-  verifyRoleCredentialInWebWallet,
-} from "~~/utils/privadoId/identities";
+
+function getQueryParams() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+  const params = new URLSearchParams(window.location.search);
+  return {
+    name: params.get("name"),
+    email: params.get("email"),
+    amount: params.get("amount"),
+    valuation: params.get("valuation"),
+  };
+}
 
 const Home: NextPage = () => {
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const queryName = searchParams.get("name");
-  const queryEmail = searchParams.get("email");
-  const queryAmount = searchParams.get("amount");
-  const queryValuation = searchParams.get("valuation");
+  const [queryParams, setQueryParams] = useState<any>({});
+
+  useEffect(() => {
+    setQueryParams(getQueryParams());
+  }, []);
+
+  const queryName = queryParams.name;
+  const queryEmail = queryParams.email;
+  const queryAmount = queryParams.amount;
+  const queryValuation = queryParams.valuation;
 
   const [signed, setSigned] = useState(false);
   const { signMessageAsync } = useSignMessage();
