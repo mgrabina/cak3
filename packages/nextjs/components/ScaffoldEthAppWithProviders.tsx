@@ -25,23 +25,30 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { WagmiProvider } from "wagmi";
+import Logout from "~~/app/auth/logout/page";
+import { Web3AuthContext } from "~~/app/layout";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~~/components/ui/tooltip";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
-const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+type ScaffoldEthAppProps = {
+  children: React.ReactNode;
+};
+const ScaffoldEthApp = ({ children }: ScaffoldEthAppProps) => {
   useInitializeNativeCurrencyPrice();
 
   // Get current page
   const pathname = usePathname();
+  console.log("status of logged in");
 
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <TooltipProvider>
           <div className="flex min-h-screen w-full flex-col bg-muted/40">
+            {/* {loggedIn ? ( */}
             <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
               <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
                 <Link
@@ -135,12 +142,19 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
                 </Tooltip>
               </nav>
             </aside>
+            {/* ) : ( */}
+            <></>
+            {/* )} */}
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
               <Header></Header>
+              {/* {loggedIn ? ( */}
               <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
                 {children}
                 <Toaster></Toaster>
               </main>
+              {/* ) : ( */}
+              <main className="relative flex justify-center mt-56 w-full h-full">{children}</main>
+              {/* )} */}
             </div>
           </div>
         </TooltipProvider>
@@ -175,6 +189,9 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <ProgressBar />
+        <div className="flex justify-end">
+          <Logout />
+        </div>
         <RainbowKitProvider
           avatar={BlockieAvatar}
           theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
