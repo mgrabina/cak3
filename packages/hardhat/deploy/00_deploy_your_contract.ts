@@ -8,7 +8,7 @@ import { Contract } from "ethers";
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployCak3: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -24,7 +24,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   console.log(deployer);
 
-  await deploy("USDC", "USDC", "USDC", {
+  await deploy("Cak3", {
     from: deployer,
     // Contract constructor arguments
     args: [deployer],
@@ -36,12 +36,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
   console.log("prog");
   // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("USDC", "USDC", "USDC");
-  console.log("👋 Initial greeting:", await yourContract.greeting());
+  const cak3 = await hre.ethers.getContract<Contract>("Cak3");
+  console.log("👋 Initial greeting:", await cak3.greeting());
 };
 
-export default deployYourContract;
+export default deployCak3;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["USDC"];
+deployCak3.tags = ["Cak3"];

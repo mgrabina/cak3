@@ -5,7 +5,6 @@ import {FundingRound} from "./FundingRound.sol";
 
 contract FundingRoundFactory {
 
-	event LaunchedFundingRound(address indexed roundAddress, address indexed owner);
 	
 	function createFundingRound(
 	address _owner,
