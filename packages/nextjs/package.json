@@ -14,8 +14,10 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
     "@heroicons/react": "^2.0.11",
     "@hookform/resolvers": "^3.9.0",
+    "@iden3/js-iden3-auth": "1.4.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -50,6 +52,7 @@
     "@tanstack/react-query": "^5.28.6",
     "@uniswap/sdk-core": "^4.0.1",
     "@uniswap/v2-sdk": "^3.0.1",
+    "@vercel/postgres": "^0.9.0",
     "axios": "^1.7.2",
     "blo": "^1.0.1",
     "burner-connector": "^0.0.8",
@@ -58,11 +61,14 @@
     "cmdk": "^1.0.0",
     "daisyui": "4.5.0",
     "date-fns": "^3.6.0",
+    "ffjavascript": "^0.3.0",
     "jiti": "^1.21.6",
     "lucide-react": "^0.408.0",
     "next": "^14.0.4",
+    "next-auth": "^4.24.7",
     "next-themes": "^0.2.1",
     "next-transpile-modules": "^10.0.1",
+    "nft.storage": "^7.2.0",
     "nodemailer": "^6.9.14",
     "nprogress": "^0.2.0",
     "pdfjs-dist": "3.4.120",
@@ -74,8 +80,11 @@
     "react-hook-form": "^7.52.1",
     "react-hot-toast": "^2.4.0",
     "react-pdf": "^9.1.0",
+    "react-qr-code": "^2.0.15",
     "recharts": "^2.12.7",
     "resend": "^3.4.0",
+    "rfc4648": "^1.5.3",
+    "snarkjs": "^0.7.4",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^8.0.4",
@@ -92,6 +101,7 @@
     "@types/nprogress": "^0",
     "@types/react": "^18.0.9",
     "@types/react-copy-to-clipboard": "^5.0.4",
+    "@types/snarkjs": "^0",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "abitype": "1.0.2",
     "autoprefixer": "^10.4.12",
@@ -105,5 +115,8 @@
     "type-fest": "^4.6.0",
     "typescript": "5.1.6",
     "vercel": "^32.4.1"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }

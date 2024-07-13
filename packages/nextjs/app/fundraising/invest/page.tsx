@@ -1,13 +1,15 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { Worker } from "@react-pdf-viewer/core";
 import { Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import axios from "axios";
 import { NextPage } from "next";
+import { set } from "nprogress";
+import QRCode from "qrcode.react";
 import { useSignMessage } from "wagmi";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
@@ -16,6 +18,12 @@ import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "~~/component
 import { Input } from "~~/components/ui/input";
 import { Label } from "~~/components/ui/label";
 import { useToast } from "~~/components/ui/use-toast";
+import { host } from "~~/utils/misc";
+import {
+  getRoleCredentialProofRequest,
+  pohCredential,
+  verifyRoleCredentialInWebWallet,
+} from "~~/utils/privadoId/identities";
 
 const Home: NextPage = () => {
   const { toast } = useToast();
@@ -27,6 +35,7 @@ const Home: NextPage = () => {
 
   const [signed, setSigned] = useState(false);
   const { signMessageAsync } = useSignMessage();
+  const pathname = usePathname();
 
   const handleSign = async () => {
     const signature = signMessageAsync({
@@ -139,14 +148,21 @@ const Home: NextPage = () => {
                   <strong>Valuation:</strong> {queryValuation}
                 </p>
                 <br></br>
+
+                {/* <Button onClick={getCredential} className="w-[100px]">
+                  get credential
+                </Button>
+                <Button onClick={verifyCredential} className="w-[100px]">
+                  verify credential
+                </Button> */}
                 {!signed ? (
                   <Button onClick={handleSign} className="w-[100px]">
                     Sign
                   </Button>
                 ) : (
                   <Button disabled className="w-[100px]">
-                  Signed
-                </Button>
+                    Signed
+                  </Button>
                 )}
               </div>
             </div>

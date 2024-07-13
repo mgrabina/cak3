@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRole } from "./ScaffoldEthAppWithProviders";
 import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "./ui/dialog";
+import { Label } from "./ui/label";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   BarChart,
@@ -21,6 +24,8 @@ import {
   UsersIcon,
   WalletIcon,
 } from "lucide-react";
+import QRCode from "qrcode.react";
+import { useAccount } from "wagmi";
 import { BugAntIcon } from "@heroicons/react/24/outline";
 import {
   Breadcrumb,
@@ -42,6 +47,7 @@ import {
 import { Input } from "~~/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "~~/components/ui/sheet";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { Role, getRoleCredentialProofRequest } from "~~/utils/privadoId/identities";
 
 type HeaderMenuLink = {
   label: string;
@@ -101,7 +107,40 @@ export const Header = () => {
   // Get current page
   const pathname = usePathname();
 
-  const profile = pathname.includes("invest") ? "Investor" : "Founder";
+  const [investorQR, setInvestorQR] = useState<string | null>(null);
+  const [founderQR, setFounderQR] = useState<string | null>(null);
+  const [employeeQR, setEmployeeQR] = useState<string | null>(null);
+
+  const { address } = useAccount();
+  useEffect(() => {
+    if (!address) return;
+    setInvestorQR(JSON.stringify(getRoleCredentialProofRequest(address, "investor", "acme")));
+    setFounderQR(JSON.stringify(getRoleCredentialProofRequest(address, "founder", "acme")));
+    setEmployeeQR(JSON.stringify(getRoleCredentialProofRequest(address, "employee", "acme")));
+  }, [address]);
+
+
+  const roleContext = useRole();
+
+  const checkRole = async () => {
+    console.log("role", roleContext?.role);
+    fetch("/api/role?address=" + address)
+      .then(res => res.json())
+      .then(data => console.log("roles from backend: ", data))
+      .then(data => {
+        const dataRoles = data as unknown as {
+          data: {
+            role: Role;
+          }[];
+        };
+
+        if (!dataRoles?.data || dataRoles?.data.length === 0) {
+          return;
+        }
+
+        roleContext?.setRole({ ...roleContext, role: dataRoles?.data[0].role });
+      });
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -171,7 +210,62 @@ export const Header = () => {
           </nav>
         </SheetContent>
       </Sheet>
-      <Badge variant="outline">{profile}</Badge>
+      {roleContext?.role.role ? (
+        <Badge variant="outline">{roleContext.role.role}</Badge>
+      ) : !address ? (
+        <Button disabled> Connect Wallet to unlock features</Button>
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="default" className="float-right w-[150px]">
+              Verify Identity
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[800px] max-h-[800px]">
+            <div className="text-md">Scan with the Polygon ID App</div>
+            <div className="grid grid-cols-3 gap-10">
+              <div className="cols-span-1">
+                <div className="text-sm w-fit">Founder</div>
+                <QRCode
+                  // size={256}
+                  height={200}
+                  width={200}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  value={founderQR ?? ""}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
+              <div className="cols-span-1">
+                <div className="text-sm">Investor</div>
+                <QRCode
+                  // size={256}
+                  height={200}
+                  width={200}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  value={investorQR ?? ""}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
+              <div className="cols-span-1">
+                <div className="text-sm">Employee</div>
+                <QRCode
+                  // size={256}
+                  height={200}
+                  width={200}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  value={employeeQR ?? ""}
+                  viewBox={`0 0 256 256`}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button className="w-full" onClick={checkRole}>
+                Flow Succeed? Click here
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
       <Breadcrumb></Breadcrumb>
       <div className="w-full flex items-center justify-end">
         <div className="relative ml-auto flex-1 md:grow-0">
