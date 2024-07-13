@@ -8,6 +8,7 @@ import { Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import axios from "axios";
 import { NextPage } from "next";
+import { useSignMessage } from "wagmi";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
@@ -24,10 +25,26 @@ const Home: NextPage = () => {
   const queryAmount = searchParams.get("amount");
   const queryValuation = searchParams.get("valuation");
 
+  const [signed, setSigned] = useState(false);
+  const { signMessageAsync } = useSignMessage();
+
   const handleSign = async () => {
-    toast({
-      description: "Your signature has been recorded.",
-    });
+    const signature = signMessageAsync({
+      message: "Sign this document to invest in Acme",
+    })
+      .then(signature => {
+        console.log(signature);
+        setSigned(true);
+        toast({
+          description: "Document signed successfully",
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        toast({
+          description: "Error signing document",
+        });
+      });
   };
 
   return (
@@ -122,9 +139,15 @@ const Home: NextPage = () => {
                   <strong>Valuation:</strong> {queryValuation}
                 </p>
                 <br></br>
-                <Button onClick={handleSign} className="w-[100px]">
-                  Sign
+                {!signed ? (
+                  <Button onClick={handleSign} className="w-[100px]">
+                    Sign
+                  </Button>
+                ) : (
+                  <Button disabled className="w-[100px]">
+                  Signed
                 </Button>
+                )}
               </div>
             </div>
           </CardContent>
