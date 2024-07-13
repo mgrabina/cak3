@@ -21,6 +21,10 @@ contract FundingRound is Ownable {
     bool public immutable whitelistEnabled;
     /// @notice Total amount of USDC raised.
     uint256 public totalRaised;
+    // @notice keeps the count of investors
+    uint256 public investorCount;
+    // @notice iterable list (array) of investors
+    address[1000] public invested;
     /// @notice Mapping to track individual contributions.
     mapping(address => uint256) public contributions;
     /// @notice Mapping for whitelist of approved investors.
@@ -75,6 +79,12 @@ contract FundingRound is Ownable {
         }
 
         usdc.safeTransferFrom(msg.sender, address(this), amount);
+
+	if(contributions[msg.sender] == 0){
+		investorCount++;
+		invested[investorCount - 1] =  msg.sender;
+	}
+
         contributions[msg.sender] += amount;
         totalRaised += amount;
 
@@ -103,7 +113,9 @@ contract FundingRound is Ownable {
         for (uint256 i = 0; i < _addresses.length; i++) {
             whitelist[_addresses[i]] = false;
         }
+	//TODO: return money
     }
+
 
     /**
      * @notice Allows the owner to add someone to the capex
@@ -112,12 +124,17 @@ contract FundingRound is Ownable {
      */
     function addToCapex(address[] calldata _addresses, uint[] calldata _percentages) external onlyOwner {
 	// TODO: Establish a percentage limit
-	//TODO: Establish when capex is not modifiable
+	// TODO: Establish when capex is not modifiable
 
 
         for (uint256 i = 0; i < _addresses.length; i++) {
             capTable[_addresses[i]] = _percentages[i];
         }
+
+    }
+
+    function executeCapex() public onlyOwner {
+
     }
 
     /**
