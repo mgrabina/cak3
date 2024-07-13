@@ -8,7 +8,9 @@ export async function POST(req: Request, { params }: { params: { address: string
   console.log("Saving role", req, params);
 
   const { address, role } = params;
-  const proof = await req.json();
+  const proof = await req.text();
+
+  console.log("content", proof);
 
   if (!address || !proof || !role) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
