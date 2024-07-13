@@ -4,8 +4,9 @@ pragma solidity ^0.8.17;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IFundingRound} from "interfaces/IFoundingRound.sol";
+import {FundingRound} from "./FundingRound.sol";
 
-import "hardhat/console.sol";
 /**
  * @title Company
  * @dev This contract allows companies to create funding rounds, and execute payrole payment
@@ -26,12 +27,37 @@ contract Company is Ownable {
     /// @notice count of registered employees
     uint256 public employeeCount;
 
-    address[100] public fundingRounds;
+    IFoundingRound[100] public fundingRounds;
     uint256 public fundingCount;
 
-    constructor(address _holdingsToken) Ownable() {
-        token = IERC20(_holdingsToken);
+    event LaunchedFundingRound(address indexed roundAddress, address indexed owner);
 
+    constructor(address _holdingsToken, address owner) Ownable() public {
+        token = IERC20(_holdingsToken);
+        transferOwnership(_owner);
+
+    }
+
+    function createFundingRound(
+        address _owner,
+        address _usdc,
+        uint256 _goal,
+        bool _whitelistEnabled,
+        address[] memory _whitelist
+    ) external returns (address) {
+        require(_owner != address(0), "Owner address cannot be zero.");
+        require(_goal > 0, "Goal amount must be greater than zero.");
+
+        fundingRound = new FundingRound(
+            address(this), _usdc, _goal, _whitelistEnabled, _whitelist
+        );
+
+        fundingRounds[fundingRoundCount] = fundingRound;
+        fundingRoundCount++;
+
+        emit LaunchedFundingRound(fundingRoundAddress, _owner);
+
+        return fundingRoundAddress;
     }
 
     function addEmployees(address[] calldata _employees, uint256[] calldata _salaries) external onlyOwner {

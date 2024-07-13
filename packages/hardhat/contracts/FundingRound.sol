@@ -17,9 +17,12 @@ contract FundingRound is Ownable {
     IERC20 public immutable usdc;
     /// @notice Capital raised goal in USDC.
     uint256 public immutable goal;
+    /// @notice controls if the whitelist is in effect or not
     bool public immutable whitelistEnabled;
     /// @notice Total amount of USDC raised.
     uint256 public totalRaised;
+    /// @notice Total amount of USDC withdrawn.
+    uint256 public totalWithdrawn;
     // @notice keeps the count of investors
     uint256 public investorCount;
     // @notice iterable list (array) of investors
@@ -28,8 +31,6 @@ contract FundingRound is Ownable {
     mapping(address => uint256) public contributions;
     /// @notice Mapping for whitelist of approved investors.
     mapping(address => bool) public whitelist;
-    /// @notice Mapping for the equitiy recievers
-    mapping(address => uint) public capTable;
 
     /**
      * @dev Emitted when an investor makes a contribution.
@@ -82,10 +83,10 @@ contract FundingRound is Ownable {
 
         usdc.safeTransferFrom(msg.sender, address(this), amount);
 
-	if(contributions[msg.sender] == 0){
-		investorCount++;
-		invested[investorCount - 1] =  msg.sender;
-	}
+        if(contributions[msg.sender] == 0) {
+            invested[investorCount] =  msg.sender;
+            investorCount++;
+        }
 
         contributions[msg.sender] += amount;
         totalRaised += amount;
@@ -117,10 +118,13 @@ contract FundingRound is Ownable {
         }
 	//TODO: return money
     }
-
+    /**
+     * @notice Withdwars the raised money back to the Company contract
+     */
     function withdrawInvestment() OnlyOwner external returns(lbalnace) {
         uint256 lbalance = usdc.balanceOf(address(this), amount);
         usdc.transfer(owner,  lbalance);
+        totalWithdrawn += lbalance;
     }
 
     /**
