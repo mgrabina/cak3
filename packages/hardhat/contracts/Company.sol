@@ -5,6 +5,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import "hardhat/console.sol";
 /**
  * @title Company
  * @dev This contract allows companies to create funding rounds, and execute payrole payment
@@ -32,17 +33,20 @@ contract Company is Ownable {
         token = IERC20(_holdingsToken);
 
     }
-    
+
     function addEmployees(address[] calldata _employees, uint256[] calldata _salaries) external onlyOwner {
         require( _employees.length == _salaries.length, "Employee - Salary, lenght missmatch");
 
-        for(uint256 i; i < _employees.length; i++) {
+        for(uint256 i = 0; i < _employees.length; i++) {
 
-            require(salaries[employees[i]] == 0, "Duplicated employee Record");
+            address employeeAddress = _employees[i];
+            uint256 salary = _salaries[i];
 
-            employeeId[_employees[i]] = employeeCount;
-            employees[employeeCount] = _employees[i];
-            salaries[_employees[i]] = _salaries[i];
+            require(salaries[employeeAddress] == 0, "Duplicated employee Record");
+
+            employeeId[employeeAddress] = employeeCount;
+            employees[employeeCount] = employeeAddress;
+            salaries[employeeAddress] = salary;
 
             employeeCount++;
 

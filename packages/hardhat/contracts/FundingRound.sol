@@ -118,28 +118,9 @@ contract FundingRound is Ownable {
 	//TODO: return money
     }
 
-
-    /**
-     * @notice Allows the owner to add someone to the capex
-     * @param _addresses List of addresses to be removed from the whitelist.
-     * @param _addresses List of equity percentages
-     */
-    function addToCapex(address[] calldata _addresses, uint[] calldata _percentages) external onlyOwner {
-	// TODO: Establish a percentage limit
-	// TODO: Establish when capex is not modifiable
-
-        for (uint256 i = 0; i < _addresses.length; i++) {
-            capTable[_addresses[i]] = _percentages[i];
-        }
-
-    }
-
-    function executeCapex() public onlyOwner {
-
-        // uint256 amount = 1000;
-        // uint256 basisPoints = 500; // 5% in basis points
-        // return (amount * basisPoints) / 10000;
-
+    function withdrawInvestment() OnlyOwner external returns(lbalnace) {
+        uint256 lbalance = usdc.balanceOf(address(this), amount);
+        usdc.transfer(owner,  lbalance);
     }
 
     /**
