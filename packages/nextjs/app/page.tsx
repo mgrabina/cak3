@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import { NextPage } from "next";
 import { Bar, BarChart, LabelList, XAxis } from "recharts";
 import { Pie, PieChart } from "recharts";
+import { useRole } from "~~/components/ScaffoldEthAppWithProviders";
 import { Badge } from "~~/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "~~/components/ui/chart";
@@ -87,6 +89,27 @@ const fundraisingChartConfig = {
 } satisfies ChartConfig;
 
 const Home: NextPage = () => {
+  const role = useRole();
+  // useEffect(() => {
+  //   role?.setRole({ role: "employee" });
+  // }, [role]);
+
+  if (!role?.role.role) return <p>Please verify your profile to unlock features.</p>;
+
+  if (role.role.role === "employee") {
+    return (
+      <Card x-chunk="dashboard-05-chunk-2 sm:col-span-1">
+        <CardHeader className="pb-2">
+          <CardDescription>Next Payroll</CardDescription>
+          <CardTitle className="text-4xl">$12k</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-xs text-muted-foreground">July 27th</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <>
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-4">
@@ -130,47 +153,49 @@ const Home: NextPage = () => {
           </Card>
         </div>
         <div className="grid sm:grid-cols-5 gap-4">
-          <div className="md:col-span-2 h-full min-h-full ">
-            <Card x-chunk="dashboard-05-chunk-3 min-h-full h-full sm:col-span-2">
-              <CardHeader className="px-7">
-                <CardTitle>Fundraising</CardTitle>
-                <CardDescription>
-                  <div className="text-sm">An overview of your fundraising status across all sources.</div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {" "}
-                <div className="text-md bold">Rounds</div>
-                <ChartContainer config={fundraisingChartConfig} className="min-h-[200px] w-full">
-                  <BarChart data={fundraisingChartData}>
-                    <XAxis dataKey="round" tickLine={false} tickMargin={10} axisLine={false} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+          {role.role.role === "founder" && (
+            <div className="md:col-span-2 h-full min-h-full ">
+              <Card x-chunk="dashboard-05-chunk-3 min-h-full h-full sm:col-span-2">
+                <CardHeader className="px-7">
+                  <CardTitle>Fundraising</CardTitle>
+                  <CardDescription>
+                    <div className="text-sm">An overview of your fundraising status across all sources.</div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {" "}
+                  <div className="text-md bold">Rounds</div>
+                  <ChartContainer config={fundraisingChartConfig} className="min-h-[200px] w-full">
+                    <BarChart data={fundraisingChartData}>
+                      <XAxis dataKey="round" tickLine={false} tickMargin={10} axisLine={false} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
 
-                    <Bar dataKey="size" fill="var(--color-size)" radius={4} />
-                    <Bar dataKey="valuation" fill="var(--color-valuation)" radius={4} />
-                  </BarChart>
-                </ChartContainer>
-                <div className="text-md bold">CAP Table</div>
-                <ChartContainer
-                  config={capChartConfig}
-                  className="mx-auto min-h-full w-full aspect-square max-h-[250px]"
-                >
-                  <PieChart>
-                    <ChartTooltip content={<ChartTooltipContent nameKey="type" hideLabel />} />
-                    <Pie data={capChartData} dataKey="percentage">
-                      <LabelList
-                        dataKey="type"
-                        className="fill-background"
-                        color="black"
-                        fontSize={12}
-                        formatter={(token: keyof typeof capChartConfig) => capChartConfig[token]?.label}
-                      />
-                    </Pie>
-                  </PieChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
+                      <Bar dataKey="size" fill="var(--color-size)" radius={4} />
+                      <Bar dataKey="valuation" fill="var(--color-valuation)" radius={4} />
+                    </BarChart>
+                  </ChartContainer>
+                  <div className="text-md bold">CAP Table</div>
+                  <ChartContainer
+                    config={capChartConfig}
+                    className="mx-auto min-h-full w-full aspect-square max-h-[250px]"
+                  >
+                    <PieChart>
+                      <ChartTooltip content={<ChartTooltipContent nameKey="type" hideLabel />} />
+                      <Pie data={capChartData} dataKey="percentage">
+                        <LabelList
+                          dataKey="type"
+                          className="fill-background"
+                          color="black"
+                          fontSize={12}
+                          formatter={(token: keyof typeof capChartConfig) => capChartConfig[token]?.label}
+                        />
+                      </Pie>
+                    </PieChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </div>
+          )}
           <div className="md:col-span-3">
             <div className="grid grid-rows-2 gap-4">
               <Card x-chunk="dashboard-05-chunk-3">
@@ -240,84 +265,86 @@ const Home: NextPage = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card x-chunk="dashboard-05-chunk-3">
-                <CardHeader className="px-7">
-                  <CardTitle>Payroll</CardTitle>
-                  <CardDescription>
-                    <div className="text-sm">An overview of your payroll and team.</div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid col-span-1">
-                      <div className="text-md text-center">Recent</div>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="hidden sm:table-cell">Members</TableHead>
-                            <TableHead className="hidden sm:table-cell">Amount</TableHead>
-                            <TableHead className="hidden md:table-cell">Paid</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-06-23</TableCell>
-                            <TableCell className="hidden md:table-cell">24</TableCell>
-                            <TableCell className="hidden md:table-cell">$126k</TableCell>
-                            <TableCell className="hidden md:table-cell">100%</TableCell>
-                          </TableRow>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-05-23</TableCell>
-                            <TableCell className="hidden md:table-cell">23</TableCell>
-                            <TableCell className="hidden md:table-cell">$120k</TableCell>
-                            <TableCell className="hidden md:table-cell">100%</TableCell>
-                          </TableRow>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-04-23</TableCell>
-                            <TableCell className="hidden md:table-cell">22</TableCell>
-                            <TableCell className="hidden md:table-cell">$110k</TableCell>
-                            <TableCell className="hidden md:table-cell">100%</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+              {role.role.role === "founder" && (
+                <Card x-chunk="dashboard-05-chunk-3">
+                  <CardHeader className="px-7">
+                    <CardTitle>Payroll</CardTitle>
+                    <CardDescription>
+                      <div className="text-sm">An overview of your payroll and team.</div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid col-span-1">
+                        <div className="text-md text-center">Recent</div>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead className="hidden sm:table-cell">Members</TableHead>
+                              <TableHead className="hidden sm:table-cell">Amount</TableHead>
+                              <TableHead className="hidden md:table-cell">Paid</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-06-23</TableCell>
+                              <TableCell className="hidden md:table-cell">24</TableCell>
+                              <TableCell className="hidden md:table-cell">$126k</TableCell>
+                              <TableCell className="hidden md:table-cell">100%</TableCell>
+                            </TableRow>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-05-23</TableCell>
+                              <TableCell className="hidden md:table-cell">23</TableCell>
+                              <TableCell className="hidden md:table-cell">$120k</TableCell>
+                              <TableCell className="hidden md:table-cell">100%</TableCell>
+                            </TableRow>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-04-23</TableCell>
+                              <TableCell className="hidden md:table-cell">22</TableCell>
+                              <TableCell className="hidden md:table-cell">$110k</TableCell>
+                              <TableCell className="hidden md:table-cell">100%</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </div>
+                      <div className="grid col-span-1">
+                        <div className="text-md text-center">Next</div>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead className="hidden sm:table-cell">Members</TableHead>
+                              <TableHead className="hidden sm:table-cell">Amount</TableHead>
+                              <TableHead className="hidden md:table-cell">Paid</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-07-23</TableCell>
+                              <TableCell className="hidden md:table-cell">26</TableCell>
+                              <TableCell className="hidden md:table-cell">$145k</TableCell>
+                              <TableCell className="hidden md:table-cell">Pending</TableCell>
+                            </TableRow>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-08-23</TableCell>
+                              <TableCell className="hidden md:table-cell">26</TableCell>
+                              <TableCell className="hidden md:table-cell">$145k</TableCell>
+                              <TableCell className="hidden md:table-cell">Pending</TableCell>
+                            </TableRow>
+                            <TableRow className="">
+                              <TableCell className="hidden md:table-cell">2024-09-23</TableCell>
+                              <TableCell className="hidden md:table-cell">26</TableCell>
+                              <TableCell className="hidden md:table-cell">$145k</TableCell>
+                              <TableCell className="hidden md:table-cell">Pending</TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                    <div className="grid col-span-1">
-                      <div className="text-md text-center">Next</div>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead className="hidden sm:table-cell">Members</TableHead>
-                            <TableHead className="hidden sm:table-cell">Amount</TableHead>
-                            <TableHead className="hidden md:table-cell">Paid</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-07-23</TableCell>
-                            <TableCell className="hidden md:table-cell">26</TableCell>
-                            <TableCell className="hidden md:table-cell">$145k</TableCell>
-                            <TableCell className="hidden md:table-cell">Pending</TableCell>
-                          </TableRow>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-08-23</TableCell>
-                            <TableCell className="hidden md:table-cell">26</TableCell>
-                            <TableCell className="hidden md:table-cell">$145k</TableCell>
-                            <TableCell className="hidden md:table-cell">Pending</TableCell>
-                          </TableRow>
-                          <TableRow className="">
-                            <TableCell className="hidden md:table-cell">2024-09-23</TableCell>
-                            <TableCell className="hidden md:table-cell">26</TableCell>
-                            <TableCell className="hidden md:table-cell">$145k</TableCell>
-                            <TableCell className="hidden md:table-cell">Pending</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

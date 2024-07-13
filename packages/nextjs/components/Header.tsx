@@ -199,42 +199,47 @@ export const Header = () => {
               <Home className="h-5 w-5" />
               Home
             </Link>
-            <Link
-              href="/fundraising"
-              className={`${
-                pathname === "/fundraising" ? "text-foreground" : "text-muted-foreground"
-              } flex items-center gap-4 px-2.5  hover:text-foreground`}
-            >
-              <DollarSignIcon className="h-5 w-5" />
-              Fundraising
-            </Link>
-            <Link
-              href="/holdings"
-              className={`${
-                pathname === "/holdings" ? "text-foreground" : "text-muted-foreground"
-              } flex items-center gap-4 px-2.5  hover:text-foreground`}
-            >
-              <WalletIcon className="h-5 w-5" />
-              Holdings
-            </Link>
-            <Link
-              href="/payroll"
-              className={`${
-                pathname === "/payroll" ? "text-foreground" : "text-muted-foreground"
-              } flex items-center gap-4 px-2.5  hover:text-foreground`}
-            >
-              <UsersIcon className="h-5 w-5" />
-              Payroll
-            </Link>
-            <Link
-              href="#"
-              className={`${
-                pathname === "/settings" ? "text-foreground" : "text-muted-foreground"
-              } flex items-center gap-4 px-2.5  hover:text-foreground`}
-            >
-              <LineChart className="h-5 w-5" />
-              Settings
-            </Link>
+
+            {roleContext?.role.role === "founder" && (
+              <>
+                <Link
+                  href="/fundraising"
+                  className={`${
+                    pathname === "/fundraising" ? "text-foreground" : "text-muted-foreground"
+                  } flex items-center gap-4 px-2.5  hover:text-foreground`}
+                >
+                  <DollarSignIcon className="h-5 w-5" />
+                  Fundraising
+                </Link>
+                <Link
+                  href="/holdings"
+                  className={`${
+                    pathname === "/holdings" ? "text-foreground" : "text-muted-foreground"
+                  } flex items-center gap-4 px-2.5  hover:text-foreground`}
+                >
+                  <WalletIcon className="h-5 w-5" />
+                  Holdings
+                </Link>
+                <Link
+                  href="/payroll"
+                  className={`${
+                    pathname === "/payroll" ? "text-foreground" : "text-muted-foreground"
+                  } flex items-center gap-4 px-2.5  hover:text-foreground`}
+                >
+                  <UsersIcon className="h-5 w-5" />
+                  Payroll
+                </Link>
+                <Link
+                  href="#"
+                  className={`${
+                    pathname === "/settings" ? "text-foreground" : "text-muted-foreground"
+                  } flex items-center gap-4 px-2.5  hover:text-foreground`}
+                >
+                  <LineChart className="h-5 w-5" />
+                  Settings
+                </Link>
+              </>
+            )}
           </nav>
         </SheetContent>
       </Sheet>

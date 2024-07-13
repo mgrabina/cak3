@@ -31,8 +31,8 @@ import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~~/components/ui/tooltip";
 // import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
-import { Role } from "~~/utils/privadoId/identities";
 import Iden3AuthComponent from "~~/utils/privadoId/iden3component";
+import { Role } from "~~/utils/privadoId/identities";
 
 export type ContextType = {
   role: Role | undefined;
@@ -88,6 +88,8 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   // Get current page
   const pathname = usePathname();
 
+  const roleContext = useRole();
+
   return (
     <>
       <RoleProvider>
@@ -119,60 +121,52 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
                     </TooltipTrigger>
                     <TooltipContent side="right">Home</TooltipContent>
                   </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/fundraising"
-                        className={`${
-                          pathname === "/fundraising" ? "bg-accent" : ""
-                        }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
-                      >
-                        <DollarSignIcon className="h-5 w-5" />
-                        <span className="sr-only">Fundraising</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Fundraising</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/holdings"
-                        className={`${
-                          pathname === "/holdings" ? "bg-accent" : ""
-                        }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
-                      >
-                        <WalletIcon className="h-5 w-5" />
-                        <span className="sr-only">Holdings</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Holdings</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/payroll"
-                        className={`${
-                          pathname === "/payroll" ? "bg-accent" : ""
-                        }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
-                      >
-                        <UsersIcon className="h-5 w-5" />
-                        <span className="sr-only">Payroll</span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">Payroll</TooltipContent>
-                  </Tooltip>
-                  {/* <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href="#"
-                      className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                    >
-                      <LineChart className="h-5 w-5" />
-                      <span className="sr-only">Analytics</span>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">Analytics</TooltipContent>
-                </Tooltip> */}
+                  {roleContext?.role.role === "founder" && (
+                    <>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/fundraising"
+                            className={`${
+                              pathname === "/fundraising" ? "bg-accent" : ""
+                            }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
+                          >
+                            <DollarSignIcon className="h-5 w-5" />
+                            <span className="sr-only">Fundraising</span>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Fundraising</TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/holdings"
+                            className={`${
+                              pathname === "/holdings" ? "bg-accent" : ""
+                            }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
+                          >
+                            <WalletIcon className="h-5 w-5" />
+                            <span className="sr-only">Holdings</span>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Holdings</TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href="/payroll"
+                            className={`${
+                              pathname === "/payroll" ? "bg-accent" : ""
+                            }  flex h-9 w-9 items-center justify-center rounded-lg text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8`}
+                          >
+                            <UsersIcon className="h-5 w-5" />
+                            <span className="sr-only">Payroll</span>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">Payroll</TooltipContent>
+                      </Tooltip>
+                    </>
+                  )}
                 </nav>
                 <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
                   <Tooltip>
