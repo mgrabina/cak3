@@ -115,30 +115,31 @@ export const Header = () => {
   useEffect(() => {
     if (!address) return;
 
-    getRoleCredentialProofRequest(address, "investor", "acme").then((req) => {
-
+    getRoleCredentialProofRequest(address, "investor", "acme").then(req => {
       setInvestorQR(JSON.stringify(req));
     });
 
-    getRoleCredentialProofRequest(address, "founder", "acme").then((req) => {
+    getRoleCredentialProofRequest(address, "founder", "acme").then(req => {
       setFounderQR(JSON.stringify(req));
     });
 
-    getRoleCredentialProofRequest(address, "employee", "acme").then((req) => {
+    getRoleCredentialProofRequest(address, "employee", "acme").then(req => {
       setEmployeeQR(JSON.stringify(req));
     });
-    }, [address]);
-
+  }, [address]);
 
   const roleContext = useRole();
+
+  const [polling, setPolling] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const checkRole = async () => {
     console.log("role", roleContext?.role);
     fetch("/api/role?address=" + address)
       .then(res => res.json())
-      .then(data => console.log("roles from backend: ", data))
       .then(data => {
-        const dataRoles = data as unknown as {
+        console.log("roles from backend: ", data);
+        const dataRoles = data as {
           data: {
             role: Role;
           }[];
@@ -149,8 +150,25 @@ export const Header = () => {
         }
 
         roleContext?.setRole({ ...roleContext, role: dataRoles?.data[0].role });
+        setIsDialogOpen(false); // Close the dialog when role is set
+      })
+      .catch(error => {
+        console.error("Error fetching roles: ", error);
       });
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (polling) {
+      checkRole(); // Check immediately
+      interval = setInterval(checkRole, 2000); // Check every 5 seconds
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [polling]);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -225,7 +243,12 @@ export const Header = () => {
       ) : !address ? (
         <Button disabled> Connect Wallet to unlock features</Button>
       ) : (
-        <Dialog>
+        <Dialog
+          onOpenChange={open => {
+            setPolling(!polling);
+            setIsDialogOpen(open);
+          }}
+        >
           <DialogTrigger asChild>
             <Button variant="default" className="float-right w-[150px]">
               Verify Identity
@@ -268,11 +291,11 @@ export const Header = () => {
                 />
               </div>
             </div>
-            <DialogFooter>
+            {/* <DialogFooter>
               <Button className="w-full" onClick={checkRole}>
                 Flow Succeed? Click here
               </Button>
-            </DialogFooter>
+            </DialogFooter> */}
           </DialogContent>
         </Dialog>
       )}

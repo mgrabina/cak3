@@ -1,11 +1,53 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import axios from "axios";
 import { NextPage } from "next";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~~/components/ui/dialog";
+import { Input } from "~~/components/ui/input";
+import { Label } from "~~/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/table";
 import { useToast } from "~~/components/ui/use-toast";
 
 const Home: NextPage = () => {
+  const [email, setEmail] = useState("martin@targecy.xyz");
+  const [role, setRole] = useState("investor");
+  const { toast } = useToast();
+
+  const handleInvite = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!email || !role || ["investor", "employee", "founder"].indexOf(role) === -1) {
+      return;
+    }
+
+    try {
+      await axios.post("/api/send-credential-email", {
+        email,
+        role,
+      });
+      toast({
+        description: "Your invite has been sent.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        description: "Your invite has failed.",
+      });
+    }
+  };
+
   return (
     <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-4">
       {/* <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
@@ -23,7 +65,47 @@ const Home: NextPage = () => {
         </div> */}
       <Card x-chunk="dashboard-05-chunk-3">
         <CardHeader className="px-7">
-          <CardTitle>Team</CardTitle>
+          <CardTitle>
+            <div className="col-span-10">
+              <CardTitle>Company</CardTitle>
+              <CardDescription>The list of members you have invited.</CardDescription>
+            </div>
+            <div className="col-span-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="default" className="float-right w-[150px]">
+                    Invite
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <form onSubmit={handleInvite}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="email" className="text-right">
+                          Email
+                        </Label>
+                        <Input
+                          id="email"
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="role" className="text-right">
+                          Role
+                        </Label>
+                        <Input id="role" value={role} onChange={e => setRole(e.target.value)} className="col-span-3" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">Send</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardTitle>
           <CardDescription>
             6<span className="text-muted-foreground"> members</span>
           </CardDescription>
