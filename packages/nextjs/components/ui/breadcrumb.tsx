@@ -92,7 +92,7 @@ const DynamicBreadcrumb: React.FC = () => {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="w-[300px]">
         {pathSegments.map((segment, index) => (
           <React.Fragment key={index}>
             <BreadcrumbItem>

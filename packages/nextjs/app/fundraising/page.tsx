@@ -1,8 +1,21 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import axios from "axios";
 import { ChevronLeft, ChevronRight, Copy, CreditCard, File, ListFilter, MoreVertical, Truck } from "lucide-react";
 import { NextPage } from "next";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,13 +25,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~~/components/ui/dropdown-menu";
+import { Input } from "~~/components/ui/input";
+import { Label } from "~~/components/ui/label";
 import { Pagination, PaginationContent, PaginationItem } from "~~/components/ui/pagination";
 import { Progress } from "~~/components/ui/progress";
 import { Separator } from "~~/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/tabs";
+import { useToast } from "~~/components/ui/use-toast";
 
 const Home: NextPage = () => {
+  const { toast } = useToast();
+
+  const [name, setName] = useState("Vitalik Buterin");
+  const [email, setEmail] = useState("vitalik@ethereum.com");
+  const [amount, setAmount] = useState("100000");
+  const [valuation, setValuation] = useState("10000000");
+
+  const handleInvite = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await axios.post("/api/send-invite-email", {
+        name,
+        email,
+        amount,
+        valuation,
+      });
+      toast({
+        description: "Your invite has been sent.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        description: "Your invite has failed.",
+      });
+    }
+  };
+
   return (
     <>
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-4">
@@ -45,9 +89,73 @@ const Home: NextPage = () => {
           </div>
           <TabsContent value="private">
             <Card x-chunk="dashboard-05-chunk-3">
-              <CardHeader className="px-7">
-                <CardTitle>Investors</CardTitle>
-                <CardDescription>The list of investors you have invited.</CardDescription>
+              <CardHeader className="px-7 grid grid-cols-12">
+                <div className="col-span-10">
+                  <CardTitle>Investors</CardTitle>
+                  <CardDescription>The list of investors you have invited.</CardDescription>
+                </div>
+                <div className="col-span-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="default" className="float-right w-[150px]">
+                        Invite
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <form onSubmit={handleInvite}>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                              Name
+                            </Label>
+                            <Input
+                              id="name"
+                              value={name}
+                              onChange={e => setName(e.target.value)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="email" className="text-right">
+                              Email
+                            </Label>
+                            <Input
+                              id="email"
+                              value={email}
+                              onChange={e => setEmail(e.target.value)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="amount" className="text-right">
+                              Amount
+                            </Label>
+                            <Input
+                              id="amount"
+                              value={amount}
+                              onChange={e => setAmount(e.target.value)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="valuation" className="text-right">
+                              Valuation
+                            </Label>
+                            <Input
+                              id="valuation"
+                              value={valuation}
+                              onChange={e => setValuation(e.target.value)}
+                              className="col-span-3"
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">Send</Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -137,9 +245,7 @@ const Home: NextPage = () => {
                   </TableBody>
                 </Table>
               </CardContent>
-              <CardFooter>
-                <Button disabled>Invite Investor (coming soon)</Button>
-              </CardFooter>
+              <CardFooter></CardFooter>
             </Card>
           </TabsContent>
           <TabsContent value="public">

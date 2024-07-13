@@ -101,6 +101,8 @@ export const Header = () => {
   // Get current page
   const pathname = usePathname();
 
+  const profile = pathname.includes("invest") ? "Investor" : "Founder";
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -169,7 +171,7 @@ export const Header = () => {
           </nav>
         </SheetContent>
       </Sheet>
-        <Badge variant="outline">Founder</Badge>
+      <Badge variant="outline">{profile}</Badge>
       <Breadcrumb></Breadcrumb>
       <div className="w-full flex items-center justify-end">
         <div className="relative ml-auto flex-1 md:grow-0">

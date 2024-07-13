@@ -3,6 +3,7 @@ import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/table";
+import { useToast } from "~~/components/ui/use-toast";
 
 const Home: NextPage = () => {
   return (
@@ -120,7 +121,8 @@ const Home: NextPage = () => {
           </Table>
         </CardContent>
         <CardFooter>
-          <Button disabled>Create New Employee (coming soon)</Button>
+          <Button disabled>Create New Employee</Button>
+          <Button className="ml-4">Pay Now ($123,000)</Button>
         </CardFooter>
       </Card>
     </div>

@@ -8,6 +8,12 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
   webpack: config => {
+    config.resolve.alias.canvas = false;
+    config.module.rules.push({
+      test: /pdf\.worker\.(min\.)?js$/,
+      type: 'asset/resource',
+    });
+
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;

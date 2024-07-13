@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Header } from "./Header";
+import { ToastProvider } from "./ui/toast";
+import { Toaster } from "./ui/toaster";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -137,6 +139,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
               <Header></Header>
               <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
                 {children}
+                <Toaster></Toaster>
               </main>
             </div>
           </div>
