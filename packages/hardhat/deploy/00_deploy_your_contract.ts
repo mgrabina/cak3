@@ -27,17 +27,15 @@ const deployCak3: DeployFunction = async function (hre: HardhatRuntimeEnvironmen
   await deploy("Cak3", {
     from: deployer,
     // Contract constructor arguments
-    args: [deployer],
+    args: [],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     // autoMine: true,
   });
 
-  console.log("prog");
   // Get the deployed contract to interact with it after deploying.
   const cak3 = await hre.ethers.getContract<Contract>("Cak3");
-  console.log("👋 Initial greeting:", await cak3.greeting());
 };
 
 export default deployCak3;

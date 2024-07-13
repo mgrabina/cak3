@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {FundingRound} from "./Company.sol";
+import {Company} from "./Company.sol";
 
 
 /**
@@ -10,7 +10,7 @@ import {FundingRound} from "./Company.sol";
  */
 contract Cak3 {
     // Array to keep track of created Company instances
-    mapping( uint256 => address) public Companies;
+    mapping( uint256 => address) public companies;
     uint256 public companyCount;
 
     /**
@@ -21,12 +21,13 @@ contract Cak3 {
 
     /**
      * @notice Creates a new Company instance.
-     * @param _name The name of the new company.
+     * @param _holdingsToken Address of the token to manage liquidity
+     * @param _companyOwner Address in charge of administering holdings
      * @return company The address of the newly created Company contract.
      */
     function createCompany(address _holdingsToken, address _companyOwner ) external returns (address company) {
         Company newCompany = new Company(_holdingsToken, _companyOwner);
-        Companies[companyCount] = address(newCompany);
+        companies[companyCount] = address(newCompany);
         emit CompanyCreated(address(newCompany));
         return address(newCompany);
     }
@@ -45,7 +46,6 @@ contract Cak3 {
      * @return company The address of the Company contract.
      */
     function getCompany(uint256 index) external view returns (address company) {
-        require(index < companies.length, "Index out of bounds");
         return address(companies[index]);
     }
 }

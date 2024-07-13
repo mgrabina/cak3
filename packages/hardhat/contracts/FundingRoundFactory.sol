@@ -23,8 +23,6 @@ contract FundingRoundFactory {
 
 		address fundingRoundAddress = address(fundingRound);
 
-		emit LaunchedFundingRound(fundingRoundAddress, _owner);
-
 		return fundingRoundAddress;
 	}
 }

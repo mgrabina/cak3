@@ -121,10 +121,11 @@ contract FundingRound is Ownable {
     /**
      * @notice Withdwars the raised money back to the Company contract
      */
-    function withdrawInvestment() OnlyOwner external returns(lbalnace) {
-        uint256 lbalance = usdc.balanceOf(address(this), amount);
-        usdc.transfer(owner,  lbalance);
+    function withdrawInvestment() external onlyOwner returns(uint256) {
+        uint256 lbalance = usdc.balanceOf(address(this));
+        usdc.transfer(owner(),  lbalance);
         totalWithdrawn += lbalance;
+        return lbalance;
     }
 
     /**
