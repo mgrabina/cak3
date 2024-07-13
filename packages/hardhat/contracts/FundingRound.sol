@@ -17,7 +17,6 @@ contract FundingRound is Ownable {
     IERC20 public immutable usdc;
     /// @notice Capital raised goal in USDC.
     uint256 public immutable goal;
-    /// @notice Indicates if a whitelist is used.
     bool public immutable whitelistEnabled;
     /// @notice Total amount of USDC raised.
     uint256 public totalRaised;
@@ -47,14 +46,16 @@ contract FundingRound is Ownable {
      * @param _whitelistAddresses List of addresses to be whitelisted if whitelist is enabled.
      */
     constructor(
+        address _owner,
         address _usdc,
         uint256 _goal,
         bool _whitelistEnabled,
         address[] memory _whitelistAddresses
-    ) {
+    ) Ownable() {
         require(_usdc != address(0), "USDC address cannot be zero.");
         require(_goal > 0, "Goal must be greater than zero.");
 
+        // owner = _owner;
         usdc = IERC20(_usdc);
         goal = _goal;
         whitelistEnabled = _whitelistEnabled;
@@ -64,6 +65,7 @@ contract FundingRound is Ownable {
                 whitelist[_whitelistAddresses[i]] = true;
             }
         }
+        transferOwnership(_owner);
     }
 
     /**
@@ -126,7 +128,6 @@ contract FundingRound is Ownable {
 	// TODO: Establish a percentage limit
 	// TODO: Establish when capex is not modifiable
 
-
         for (uint256 i = 0; i < _addresses.length; i++) {
             capTable[_addresses[i]] = _percentages[i];
         }
@@ -134,6 +135,10 @@ contract FundingRound is Ownable {
     }
 
     function executeCapex() public onlyOwner {
+
+        // uint256 amount = 1000;
+        // uint256 basisPoints = 500; // 5% in basis points
+        // return (amount * basisPoints) / 10000;
 
     }
 
