@@ -4,9 +4,9 @@ import { randomUUID } from "crypto";
 import { Resend } from "resend";
 import { env } from "~~/types/env";
 
-const founderLink = "https://issuer-ui.polygonid.me/credentials/scan-link/4a2c016e-0ef0-4f7b-a8af-2632da388086";
-const investorLink = "https://issuer-ui.polygonid.me/credentials/scan-link/c88e62ee-8c25-4422-81cb-018181890254";
-const employeeLink = "https://issuer-ui.polygonid.me/credentials/scan-link/dffef1f5-3cb6-41a6-8abb-2f0927bed010";
+const founderLink = " https://issuer-ui.polygonid.me/credentials/scan-link/4a7693bc-e484-4a5e-89ab-ce57e4555ea9";
+const investorLink = "https://issuer-ui.polygonid.me/credentials/scan-link/eea83272-ee96-423a-8054-19409438c077";
+const employeeLink = "https://issuer-ui.polygonid.me/credentials/scan-link/4797a21e-fb1f-4f97-bad8-f3d6efa60461";
 
 export async function POST(req: NextRequest) {
   const { email, role } = await req.json();
