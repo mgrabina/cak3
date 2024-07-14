@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { Worker } from "@react-pdf-viewer/core";
@@ -16,6 +17,7 @@ import { decodeAbiParameters, parseAbiParameters } from "viem";
 import { useSignMessage } from "wagmi";
 import { type BaseError, useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import abi from "~~/abi/ContractAbi.json";
+import { useRole } from "~~/components/ScaffoldEthAppWithProviders";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
@@ -35,6 +37,7 @@ function getQueryParams() {
     email: params.get("email"),
     amount: params.get("amount"),
     valuation: params.get("valuation"),
+    kycRequired: params.get("kycRequired"),
   };
 }
 
@@ -52,6 +55,7 @@ const Home: NextPage = () => {
   const queryEmail = queryParams.email;
   const queryAmount = queryParams.amount;
   const queryValuation = queryParams.valuation;
+  const queryKYCRequired = queryParams.kycRequired;
 
   const [done, setDone] = useState(false);
   const { setOpen } = useIDKit();
@@ -64,6 +68,8 @@ const Home: NextPage = () => {
   const { signMessageAsync } = useSignMessage();
   const pathname = usePathname();
 
+  const roleContext = useRole();
+
   // TODO: Functionality after verifying
   const onSuccess = () => {
     console.log("Success");
@@ -74,7 +80,7 @@ const Home: NextPage = () => {
   //   throw new Error("TODO: verify proof server route");
   // };
 
-  const submitTx = async (proof: ISuccessResult) => {
+  const submitTx = async (proof?: ISuccessResult) => {
     try {
       await writeContractAsync({
         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
@@ -83,8 +89,8 @@ const Home: NextPage = () => {
         functionName: "verifyAndExecute",
         args: [
           account.address!,
-          BigInt(proof!.merkle_root),
-          BigInt(proof!.nullifier_hash),
+          proof ? BigInt(proof!.merkle_root) : "",
+          proof ? BigInt(proof!.nullifier_hash) : "",
           decodeAbiParameters(parseAbiParameters("uint256[8]"), proof!.proof as `0x${string}`)[0],
         ],
       });
@@ -206,7 +212,7 @@ const Home: NextPage = () => {
                 <br></br>
                 <div>
                   {" "}
-                  {account.isConnected ? (
+                  {account.isConnected && roleContext?.role.role === "investor" ? (
                     <>
                       <IDKitWidget
                         app_id="app_staging_d8e1007ecb659d3ca0a6a9c4f6f61287"
@@ -215,25 +221,47 @@ const Home: NextPage = () => {
                         onSuccess={submitTx}
                         autoClose
                       />
-                      {!done && (
-                        <Button
-                          onClick={() => {
-                            setOpen(true);
-                            handleSign();
-                          }}
-                        >
-                          {!hash &&
-                            (isPending ? "Pending, please check your wallet..." : "Verify and Execute Transaction")}
-                        </Button>
+                      {!done &&
+                        (queryKYCRequired === "true" ? (
+                          <Button
+                            onClick={() => {
+                              setOpen(true);
+                              handleSign();
+                            }}
+                          >
+                            {!hash &&
+                              (isPending
+                                ? "Pending, please check your wallet..."
+                                : "Verify Humanity and Execute Transaction")}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              submitTx(undefined);
+                            }}
+                          >
+                            {!hash && (isPending ? "Pending, please check your wallet..." : "Sign Document")}
+                          </Button>
+                        ))}
+                      {hash && (
+                        <p>
+                          See transaction in{" "}
+                          <Link
+                            className="cursor-pointer text-blue-500"
+                            target="_blank"
+                            href={`https://optimism-sepolia.blockscout.com/tx/${hash}`}
+                          >
+                            Blockscout
+                          </Link>{" "}
+                        </p>
                       )}
-                      {hash && <p>Transaction Hash: {hash}</p>}
                       {isConfirming && <p>Waiting for confirmation...</p>}
                       {isConfirmed && <p>Transaction confirmed.</p>}
                       {error && <p>Error: {(error as BaseError).message}</p>}
                     </>
                   ) : (
-                    <Button disabled className="w-[150px]">
-                      Transaction accepted
+                    <Button disabled className=" ">
+                      You are not an investor
                     </Button>
                   )}{" "}
                 </div>

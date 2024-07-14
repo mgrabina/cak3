@@ -5,7 +5,7 @@ import { Resend } from "resend";
 import { env } from "~~/types/env";
 
 export async function POST(req: NextRequest) {
-  const { name, email, amount, valuation } = await req.json();
+  const { name, email, amount, valuation, kycRequired } = await req.json();
 
   const msg = {
     to: email,
@@ -19,12 +19,18 @@ export async function POST(req: NextRequest) {
     - Amount: ${amount}
     - Valuation: ${valuation}
     
-    Please complete the operation here: ${
+    Please complete the operation here: 
+    \n
+    ${
       env.NEXT_PUBLIC_VERCEL_ENV === "production" || env.NEXT_PUBLIC_VERCEL_ENV === "preview"
         ? "https://cak3.vercel.app/fundraising/invest?invite=" +
           randomUUID() +
           "&email=" +
           email +
+          "&name=" +
+          name +
+          "&kycRequired=" +
+          kycRequired +
           "&amount=" +
           amount +
           "&valuation=" +
@@ -33,6 +39,10 @@ export async function POST(req: NextRequest) {
           randomUUID() +
           "&email=" +
           email +
+          "&name=" +
+          name +
+          "&kycRequired=" +
+          kycRequired +
           "&amount=" +
           amount +
           "&valuation=" +

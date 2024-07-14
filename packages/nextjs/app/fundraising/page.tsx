@@ -39,12 +39,13 @@ const Home: NextPage = () => {
   const { toast } = useToast();
 
   const [name, setName] = useState("Vitalik Buterin");
-  const [email, setEmail] = useState("vitalik@ethereum.com");
+  const [email, setEmail] = useState("martin@targecy.xyz");
   const [amount, setAmount] = useState("100000");
   const [valuation, setValuation] = useState("10000000");
-  const [kycRequired, isKycRequired] = useState(false);
+  const [kycRequired, isKycRequired] = useState(true);
   const [done, setDone] = useState(false);
 
+  console.log(kycRequired);
   const handleInvite = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -54,6 +55,7 @@ const Home: NextPage = () => {
         email,
         amount,
         valuation,
+        kycRequired,
       });
       toast({
         description: "Your invite has been sent.",
@@ -151,10 +153,18 @@ const Home: NextPage = () => {
                               className="col-span-3"
                             />
                           </div>
-                        </div>
-                        <div className="flex flex-row gap-5">
-                          Require KYC
-                          <></>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="kyc" className="text-right">
+                              Valuation
+                            </Label>
+                            <Input
+                              id="kyc"
+                              type="checkbox"
+                              checked={kycRequired}
+                              onChange={e => isKycRequired(e.target.checked)}
+                              className="col-span-3"
+                            />
+                          </div>
                         </div>
                         <DialogFooter>
                           <Button type="submit">Send</Button>
