@@ -6,7 +6,9 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
   },
   client: {
-    NEXT_PUBLIC_VERCEL_ENV: z.union([z.literal("production"), z.literal("preview"), z.literal("development")]),
+    NEXT_PUBLIC_VERCEL_ENV: z
+      .union([z.literal("production"), z.literal("preview"), z.literal("development")])
+      .default("development"),
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   runtimeEnv: {

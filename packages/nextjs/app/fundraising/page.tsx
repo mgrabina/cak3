@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import { ChevronLeft, ChevronRight, Copy, CreditCard, File, ListFilter, MoreVertical, Truck } from "lucide-react";
 import { NextPage } from "next";
@@ -30,6 +30,7 @@ import { Label } from "~~/components/ui/label";
 import { Pagination, PaginationContent, PaginationItem } from "~~/components/ui/pagination";
 import { Progress } from "~~/components/ui/progress";
 import { Separator } from "~~/components/ui/separator";
+import { Switch } from "~~/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~~/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~~/components/ui/tabs";
 import { useToast } from "~~/components/ui/use-toast";
@@ -41,6 +42,8 @@ const Home: NextPage = () => {
   const [email, setEmail] = useState("vitalik@ethereum.com");
   const [amount, setAmount] = useState("100000");
   const [valuation, setValuation] = useState("10000000");
+  const [kycRequired, isKycRequired] = useState(false);
+  const [done, setDone] = useState(false);
 
   const handleInvite = async (e: FormEvent) => {
     e.preventDefault();
@@ -148,6 +151,10 @@ const Home: NextPage = () => {
                               className="col-span-3"
                             />
                           </div>
+                        </div>
+                        <div className="flex flex-row gap-5">
+                          Require KYC
+                          <></>
                         </div>
                         <DialogFooter>
                           <Button type="submit">Send</Button>

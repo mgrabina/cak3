@@ -10,8 +10,8 @@ export type ScaffoldConfig = {
 };
 
 const isProduction = env.NEXT_PUBLIC_VERCEL_ENV === "production" || env.NEXT_PUBLIC_VERCEL_ENV === "preview";
-const targetNetworks = isProduction ? chains.sepolia : chains.hardhat;
-
+const targetNetworks = isProduction ? chains.optimismSepolia : chains.hardhat;
+// const targetNetworks = isProduction ? chains.hardhat : chains.optimismSepolia;
 const scaffoldConfig = {
   // The networks on which your DApp is live
   targetNetworks: [targetNetworks],

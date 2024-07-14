@@ -6,11 +6,16 @@ import { useRouter } from "next/router";
 import { Worker } from "@react-pdf-viewer/core";
 import { Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import { IDKitWidget, ISuccessResult, VerificationLevel, useIDKit } from "@worldcoin/idkit";
 import axios from "axios";
+import { ConnectKitButton } from "connectkit";
 import { NextPage } from "next";
 import { set } from "nprogress";
 import QRCode from "qrcode.react";
+import { decodeAbiParameters, parseAbiParameters } from "viem";
 import { useSignMessage } from "wagmi";
+import { type BaseError, useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import abi from "~~/abi/ContractAbi.json";
 import { Badge } from "~~/components/ui/badge";
 import { Button } from "~~/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~~/components/ui/card";
@@ -34,6 +39,8 @@ function getQueryParams() {
 }
 
 const Home: NextPage = () => {
+  const account = useAccount();
+
   const { toast } = useToast();
   const [queryParams, setQueryParams] = useState<any>({});
 
@@ -46,10 +53,46 @@ const Home: NextPage = () => {
   const queryAmount = queryParams.amount;
   const queryValuation = queryParams.valuation;
 
+  const [done, setDone] = useState(false);
+  const { setOpen } = useIDKit();
+
+  const { data: hash, isPending, error, writeContractAsync } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
   const [signed, setSigned] = useState(false);
   const { signMessageAsync } = useSignMessage();
   const pathname = usePathname();
 
+  // TODO: Functionality after verifying
+  const onSuccess = () => {
+    console.log("Success");
+  };
+
+  // TODO: Calls your implemented server route
+  // const verifyProof = async proof => {
+  //   throw new Error("TODO: verify proof server route");
+  // };
+
+  const submitTx = async (proof: ISuccessResult) => {
+    try {
+      await writeContractAsync({
+        address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+        account: account.address!,
+        abi,
+        functionName: "verifyAndExecute",
+        args: [
+          account.address!,
+          BigInt(proof!.merkle_root),
+          BigInt(proof!.nullifier_hash),
+          decodeAbiParameters(parseAbiParameters("uint256[8]"), proof!.proof as `0x${string}`)[0],
+        ],
+      });
+      setDone(true);
+    } catch (error) {
+      throw new Error((error as BaseError).shortMessage);
+    }
+  };
   const handleSign = async () => {
     const signature = signMessageAsync({
       message: "Sign this document to invest in Acme",
@@ -161,22 +204,39 @@ const Home: NextPage = () => {
                   <strong>Valuation:</strong> {queryValuation}
                 </p>
                 <br></br>
-
-                {/* <Button onClick={getCredential} className="w-[100px]">
-                  get credential
-                </Button>
-                <Button onClick={verifyCredential} className="w-[100px]">
-                  verify credential
-                </Button> */}
-                {!signed ? (
-                  <Button onClick={handleSign} className="w-[100px]">
-                    Sign
-                  </Button>
-                ) : (
-                  <Button disabled className="w-[100px]">
-                    Signed
-                  </Button>
-                )}
+                <div>
+                  {" "}
+                  {account.isConnected ? (
+                    <>
+                      <IDKitWidget
+                        app_id="app_staging_d8e1007ecb659d3ca0a6a9c4f6f61287"
+                        action="investor-kyc"
+                        signal={account.address}
+                        onSuccess={submitTx}
+                        autoClose
+                      />
+                      {!done && (
+                        <Button
+                          onClick={() => {
+                            setOpen(true);
+                            handleSign();
+                          }}
+                        >
+                          {!hash &&
+                            (isPending ? "Pending, please check your wallet..." : "Verify and Execute Transaction")}
+                        </Button>
+                      )}
+                      {hash && <p>Transaction Hash: {hash}</p>}
+                      {isConfirming && <p>Waiting for confirmation...</p>}
+                      {isConfirmed && <p>Transaction confirmed.</p>}
+                      {error && <p>Error: {(error as BaseError).message}</p>}
+                    </>
+                  ) : (
+                    <Button disabled className="w-[150px]">
+                      Transaction accepted
+                    </Button>
+                  )}{" "}
+                </div>
               </div>
             </div>
           </CardContent>
